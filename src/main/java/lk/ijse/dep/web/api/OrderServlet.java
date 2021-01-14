@@ -106,6 +106,8 @@ public class OrderServlet extends HttpServlet {
                 /* In case something happens unexpectedly */
                 connection.rollback();
                 throw t;
+            }finally{
+                connection.setAutoCommit(true);
             }
         }catch (SQLIntegrityConstraintViolationException exp){
             throw new HttpResponseException(400, "Duplicate entry", exp);
