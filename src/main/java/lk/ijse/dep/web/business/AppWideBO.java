@@ -19,52 +19,49 @@ import java.util.stream.Collectors;
  **/
 public class AppWideBO {
 
-    private DataAccess dataAccess;
+//    private DataAccess dataAccess;
 
     public AppWideBO(Connection connection) {
-        this.dataAccess = new DataAccess(connection);
+
     }
 
-    public boolean saveCustomer(CustomerDTO dto) throws Exception{
-        Customer customer = new Customer(dto.getId(), dto.getName(), dto.getAddress());
-        return dataAccess.saveCustomer(customer);
+    public boolean saveCustomer(CustomerDTO dto) throws Exception {
+        return true;
     }
-    public boolean updateCustomer(CustomerDTO dto) throws Exception{
-        Customer customer = new Customer(dto.getId(), dto.getName(), dto.getAddress());
-        return dataAccess.updateCustomer(customer);
+
+    public boolean updateCustomer(CustomerDTO dto) throws Exception {
+        return true;
     }
-    public boolean deleteCustomer(String id) throws Exception{
-        return dataAccess.deleteCustomer(id);
+
+    public boolean deleteCustomer(String id) throws Exception {
+        return true;
     }
-    public List<CustomerDTO> getAllCustomers() throws Exception{
-       return dataAccess.getAllCustomers().stream().map(c -> new CustomerDTO(c.getId(),c.getName(),c.getAddress())).collect(Collectors.toList());
+
+    public List<CustomerDTO> getAllCustomers() throws Exception {
+        return null;
     }
 
     //--------------------------------------
-    public boolean saveItem(ItemDTO dto) throws Exception{
-        Item item = new Item(dto.getCode(), dto.getDescription(), dto.getUnitPrice(),dto.getQtyOnHand());
-        return dataAccess.saveItem(item);
+    public boolean saveItem(ItemDTO dto) throws Exception {
+        return true;
     }
 
-    public boolean updateItem(ItemDTO dto) throws Exception{
-        Item item = new Item(dto.getCode(), dto.getDescription(), dto.getUnitPrice(),dto.getQtyOnHand());
-        return dataAccess.updateItem(item);
-    }
-    public boolean deleteItem(String code) throws Exception{
-        return dataAccess.deleteCustomer(code);
+    public boolean updateItem(ItemDTO dto) throws Exception {
+        return true;
     }
 
-    public List<ItemDTO> getAllItems() throws Exception{
-        return dataAccess.getAllItems().stream().map(i -> new ItemDTO(i.getCode(),i.getDescription(),i.getUnitPrice(),i.getQtyOnHand())).collect(Collectors.toList());
+    public boolean deleteItem(String code) throws Exception {
+        return true;
+    }
+
+    public List<ItemDTO> getAllItems() throws Exception {
+        return null;
     }
 
     //----------------------------------------
 
-    public boolean saveOrder(OrderDTO dto) throws Exception{
-        Order order = new Order(dto.getOrderId(),Date.valueOf(dto.getOrderDate()),dto.getCustomerId());
-        List<OrderDetail> orderDetails = dto.getOrderDetails().stream().map(
-                detailDto -> new OrderDetail(detailDto.getOrderId(), detailDto.getItemCode(), detailDto.getQty(), detailDto.getUnitPrice())).collect(Collectors.toList());
-        return dataAccess.saveOrder(order, orderDetails);
+    public boolean saveOrder(OrderDTO dto) throws Exception {
+        return true;
     }
 
 }
