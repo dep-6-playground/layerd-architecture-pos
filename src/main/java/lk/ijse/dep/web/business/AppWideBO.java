@@ -1,23 +1,19 @@
 package lk.ijse.dep.web.business;
 
-import lk.ijse.dep.web.dao.CustomerDAO;
-import lk.ijse.dep.web.dao.ItemDAO;
-import lk.ijse.dep.web.dao.OrderDAO;
-import lk.ijse.dep.web.dao.OrderDetailDAO;
-import lk.ijse.dep.web.dao.impl.CustomerDAOImpl;
-import lk.ijse.dep.web.dao.impl.ItemDAOImpl;
-import lk.ijse.dep.web.dao.impl.OrderDAOImpl;
-import lk.ijse.dep.web.dao.impl.OrderDetailDAOImpl;
+import lk.ijse.dep.web.dao.custom.CustomerDAO;
+import lk.ijse.dep.web.dao.custom.ItemDAO;
+import lk.ijse.dep.web.dao.custom.OrderDAO;
+import lk.ijse.dep.web.dao.custom.OrderDetailDAO;
+import lk.ijse.dep.web.dao.custom.impl.CustomerDAOImpl;
+import lk.ijse.dep.web.dao.custom.impl.ItemDAOImpl;
+import lk.ijse.dep.web.dao.custom.impl.OrderDAOImpl;
+import lk.ijse.dep.web.dao.custom.impl.OrderDetailDAOImpl;
 import lk.ijse.dep.web.dto.CustomerDTO;
 import lk.ijse.dep.web.dto.ItemDTO;
 import lk.ijse.dep.web.dto.OrderDTO;
 import lk.ijse.dep.web.entity.Customer;
-import lk.ijse.dep.web.entity.Item;
-import lk.ijse.dep.web.entity.Order;
-import lk.ijse.dep.web.entity.OrderDetail;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,20 +42,20 @@ public class AppWideBO {
 
     public boolean saveCustomer(CustomerDTO dto) throws Exception {
         Customer c = new Customer(dto.getId(),dto.getName(),dto.getAddress());
-        return customerDAO.saveCustomer(c);
+        return customerDAO.save(c);
     }
 
     public boolean updateCustomer(CustomerDTO dto) throws Exception {
         Customer c = new Customer(dto.getId(),dto.getName(), dto.getAddress());
-        return customerDAO.updateCustomer(c);
+        return customerDAO.update(c);
     }
 
     public boolean deleteCustomer(String id) throws Exception {
-        return customerDAO.deleteCustomer(id);
+        return customerDAO.delete(id);
     }
 
     public List<CustomerDTO> getAllCustomers() throws Exception {
-        return customerDAO.getAllCustomers().stream()
+        return customerDAO.getAll().stream()
                 .map(c->new CustomerDTO(c.getId(),c.getName(),c.getAddress())).collect(Collectors.toList());
     }
 

@@ -1,9 +1,8 @@
-package lk.ijse.dep.web.dao.impl;
+package lk.ijse.dep.web.dao.custom.impl;
 
 
-import lk.ijse.dep.web.dao.OrderDAO;
+import lk.ijse.dep.web.dao.custom.OrderDAO;
 import lk.ijse.dep.web.entity.Order;
-import lk.ijse.dep.web.entity.OrderDetail;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,30 +23,32 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public boolean saveOrder(Order order) throws Exception {
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO `order` VALUES (?,?,?)");
-            pstm.setString(1, order.getId());
-            pstm.setDate(2, order.getDate());
-            pstm.setString(3, order.getCustomerId());
-            return (pstm.executeUpdate() > 0) ;
-        }
+    public boolean save(Order order) throws Exception {
+        PreparedStatement pstm = connection.prepareStatement("INSERT INTO `order` VALUES (?,?,?)");
+        pstm.setString(1, order.getId());
+        pstm.setDate(2, order.getDate());
+        pstm.setString(3, order.getCustomerId());
+        return (pstm.executeUpdate() > 0) ;
+    }
 
     @Override
-    public boolean updateOrder(Order order) throws Exception {
+    public boolean update(Order order) throws Exception {
         PreparedStatement pst = connection.prepareStatement("UPDATE `order` SET date=?,customer_id=? WHERE id=?");
         pst.setDate(1, order.getDate());
         pst.setString(2, order.getCustomerId());
         pst.setString(3, order.getId());
         return pst.executeUpdate() > 0;
     }
+
     @Override
-    public boolean deleteOrder(String id) throws Exception {
+    public boolean delete(String id) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("DELETE FROM `order` WHERE id=?");
         pstm.setString(1, id);
         return pstm.executeUpdate() > 0;
     }
+
     @Override
-    public List<Order> getAllOrders() throws Exception {
+    public List<Order> getAll() throws Exception {
         PreparedStatement pstm = connection.prepareStatement("SELECT * FROM `order`");
         List<Order> orders = new ArrayList<>();
         ResultSet rst = pstm.executeQuery();
@@ -60,8 +61,9 @@ public class OrderDAOImpl implements OrderDAO {
         }
         return orders;
     }
+
     @Override
-    public Order getOrder(String id) throws Exception {
+    public Order get(String id) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("SELECT * FROM `order` WHERE id=?");
         pstm.setString(1, id);
         ResultSet rst = pstm.executeQuery();
@@ -73,4 +75,6 @@ public class OrderDAOImpl implements OrderDAO {
             return null;
         }
     }
+
+
 }

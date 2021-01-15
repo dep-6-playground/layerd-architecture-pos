@@ -1,6 +1,7 @@
-package lk.ijse.dep.web.dao.impl;
+package lk.ijse.dep.web.dao.custom.impl;
 
-import lk.ijse.dep.web.dao.ItemDAO;
+import lk.ijse.dep.web.dao.custom.ItemDAO;
+import lk.ijse.dep.web.entity.Customer;
 import lk.ijse.dep.web.entity.Item;
 
 import java.sql.Connection;
@@ -22,7 +23,7 @@ public class ItemDAOImpl implements ItemDAO {
     }
 
     @Override
-    public boolean saveItem(Item item) throws Exception {
+    public boolean save(Item item) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("INSERT INTO item VALUES (?,?,?,?)");
         pstm.setString(1, item.getCode());
         pstm.setString(2, item.getDescription());
@@ -30,8 +31,9 @@ public class ItemDAOImpl implements ItemDAO {
         pstm.setInt(4, item.getQtyOnHand());
         return pstm.executeUpdate() > 0;
     }
+
     @Override
-    public boolean updateItem(Item item) throws Exception {
+    public boolean update(Item item) throws Exception {
         PreparedStatement pst = connection.prepareStatement("UPDATE item SET description=?,unit_price=?,qty_on_hand=? WHERE code=?");
         pst.setString(1, item.getDescription());
         pst.setBigDecimal(2, item.getUnitPrice());
@@ -39,14 +41,16 @@ public class ItemDAOImpl implements ItemDAO {
         pst.setString(4, item.getCode());
         return pst.executeUpdate() > 0;
     }
+
     @Override
-    public boolean deleteItem(String code) throws Exception {
+    public boolean delete(String code) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("DELETE FROM item WHERE code=?");
         pstm.setString(1, code);
         return pstm.executeUpdate() > 0;
     }
+
     @Override
-    public List<Item> getAllItems() throws Exception {
+    public List<Item> getAll() throws Exception {
         PreparedStatement pstm = connection.prepareStatement("SELECT * FROM item");
         List<Item> items = new ArrayList<>();
         ResultSet rst = pstm.executeQuery();
@@ -57,10 +61,11 @@ public class ItemDAOImpl implements ItemDAO {
         }
         return items;
     }
+
     @Override
-    public Item getItem(String code) throws Exception {
+    public Item get(String key) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("SELECT * FROM item WHERE code=?");
-        pstm.setString(1, code);
+        pstm.setString(1, key);
         ResultSet rst = pstm.executeQuery();
 
         if (rst.next()) {
@@ -70,4 +75,6 @@ public class ItemDAOImpl implements ItemDAO {
             return null;
         }
     }
+
+
 }

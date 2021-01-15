@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author : Deshan Charuka <d.c.0729439631@gmail.com>
  * @since : 2021-01-14
  **/
-public class Customer implements Serializable {
+public class Customer implements SuperEntity {
     private String id;
     private String name;
     private String address;

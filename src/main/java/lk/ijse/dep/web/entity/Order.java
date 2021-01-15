@@ -7,7 +7,7 @@ import java.sql.Date;
  * @author : Deshan Charuka <d.c.0729439631@gmail.com>
  * @since : 2021-01-14
  **/
-public class Order implements Serializable {
+public class Order implements SuperEntity {
     private String id;
     private Date date;
     private String customerId;

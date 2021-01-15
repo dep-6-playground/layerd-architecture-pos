@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  * @author : Deshan Charuka <d.c.0729439631@gmail.com>
  * @since : 2021-01-14
  **/
-public class OrderDetail implements Serializable {
+public class OrderDetail implements SuperEntity {
     private OrderDetailPK orderDetailPK;
     private int qty;
     private BigDecimal unitPrice;

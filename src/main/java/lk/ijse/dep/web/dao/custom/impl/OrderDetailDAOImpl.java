@@ -1,6 +1,6 @@
-package lk.ijse.dep.web.dao.impl;
+package lk.ijse.dep.web.dao.custom.impl;
 
-import lk.ijse.dep.web.dao.OrderDetailDAO;
+import lk.ijse.dep.web.dao.custom.OrderDetailDAO;
 import lk.ijse.dep.web.entity.OrderDetail;
 import lk.ijse.dep.web.entity.OrderDetailPK;
 
@@ -21,8 +21,9 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
     public void setConnection(Connection connection) throws Exception {
         this.connection = connection;
     }
+
     @Override
-    public boolean saveOrderDetail(OrderDetail orderDetail) throws Exception {
+    public boolean save(OrderDetail orderDetail) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("INSERT INTO order_detail VALUES (?,?,?,?)");
         pstm.setString(1, orderDetail.getOrderDetailPK().getOrderId());
         pstm.setString(2, orderDetail.getOrderDetailPK().getItemCode());
@@ -32,7 +33,7 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
     }
 
     @Override
-    public boolean updateOrderDetail(OrderDetail orderDetail) throws Exception {
+    public boolean update(OrderDetail orderDetail) throws Exception {
         PreparedStatement pst = connection.prepareStatement("UPDATE order_detail  SET qty=?,unit_price=? WHERE order_id=? AND item_code=?");
         pst.setInt(1, orderDetail.getQty());
         pst.setBigDecimal(2, orderDetail.getUnitPrice());
@@ -40,29 +41,31 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
         pst.setString(4, orderDetail.getOrderDetailPK().getItemCode());
         return pst.executeUpdate() > 0;
     }
+
     @Override
-    public boolean deleteOrderDetail(OrderDetailPK pk) throws Exception {
+    public boolean delete(OrderDetailPK pk) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("DELETE FROM order_detail WHERE order_id=? AND item_code=?");
         pstm.setString(1,pk.getOrderId());
         pstm.setString(2,pk.getItemCode());
         return pstm.executeUpdate() > 0;
     }
+
     @Override
-    public List<OrderDetail> getAllOrderDetails() throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM order_detail");
+    public List<OrderDetail> getAll() throws Exception {
+        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM orderDetail");
         List<OrderDetail> orderDetails = new ArrayList<>();
         ResultSet rst = pstm.executeQuery();
         while (rst.next()) {
-            orderDetails.add(
-                    new OrderDetail(
-                            new OrderDetailPK(rst.getString("order_id"),rst.getString("item_code")),
-                            rst.getInt("qty"),
-                            rst.getBigDecimal("unit_price")));
+            orderDetails.add(new OrderDetail(rst.getString("order_id"),
+                    rst.getString("item_code"),
+                    rst.getInt("qty"),
+                    rst.getBigDecimal("unit_price")));
         }
         return orderDetails;
     }
+
     @Override
-    public OrderDetail getOrderDetail(OrderDetailPK pk) throws Exception {
+    public OrderDetail get(OrderDetailPK pk) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("SELECT * FROM order_detail WHERE order_id=? AND item_code=?");
         pstm.setString(1, pk.getOrderId());
         pstm.setString(2, pk.getItemCode());
@@ -77,4 +80,5 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
             return null;
         }
     }
+
 }

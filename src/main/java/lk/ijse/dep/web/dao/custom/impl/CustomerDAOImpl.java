@@ -1,6 +1,6 @@
-package lk.ijse.dep.web.dao.impl;
+package lk.ijse.dep.web.dao.custom.impl;
 
-import lk.ijse.dep.web.dao.CustomerDAO;
+import lk.ijse.dep.web.dao.custom.CustomerDAO;
 import lk.ijse.dep.web.entity.Customer;
 
 import java.sql.Connection;
@@ -23,16 +23,16 @@ public class CustomerDAOImpl implements CustomerDAO {
     }
 
     @Override
-    public boolean saveCustomer(Customer customer) throws Exception {
+    public boolean save(Customer customer) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("INSERT INTO customer VALUES (?,?,?)");
         pstm.setString(1, customer.getId());
         pstm.setString(2, customer.getName());
         pstm.setString(3, customer.getAddress());
         return pstm.executeUpdate() > 0;
     }
-    @Override
-    public boolean updateCustomer(Customer customer) throws Exception {
 
+    @Override
+    public boolean update(Customer customer) throws Exception {
         PreparedStatement pst = connection.prepareStatement("UPDATE customer SET name=?, address=? WHERE id=?");
         pst.setString(1, customer.getName());
         pst.setString(2, customer.getAddress());
@@ -40,14 +40,16 @@ public class CustomerDAOImpl implements CustomerDAO {
         return pst.executeUpdate() > 0;
 
     }
+
     @Override
-    public boolean deleteCustomer(String id) throws Exception {
+    public boolean delete(String id) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("DELETE FROM customer WHERE id=?");
         pstm.setString(1, id);
         return pstm.executeUpdate() > 0;
     }
+
     @Override
-    public List<Customer> getAllCustomers() throws Exception {
+    public List<Customer> getAll() throws Exception {
         PreparedStatement pstm = connection.prepareStatement("SELECT * FROM customer");
         List<Customer> customers = new ArrayList<>();
         ResultSet rst = pstm.executeQuery();
@@ -56,8 +58,9 @@ public class CustomerDAOImpl implements CustomerDAO {
         }
         return customers;
     }
+
     @Override
-    public Customer getCustomer(String id) throws Exception {
+    public Customer get(String id) throws Exception {
         PreparedStatement pstm = connection.prepareStatement("SELECT * FROM customer WHERE id=?");
         pstm.setString(1,id);
         ResultSet rst = pstm.executeQuery();
@@ -70,5 +73,6 @@ public class CustomerDAOImpl implements CustomerDAO {
             return null;
         }
     }
+
 
 }
