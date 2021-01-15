@@ -1,5 +1,7 @@
 package lk.ijse.dep.web.business;
 
+import lk.ijse.dep.web.dao.DAOTypes;
+import lk.ijse.dep.web.dao.DaoFactory;
 import lk.ijse.dep.web.dao.custom.CustomerDAO;
 import lk.ijse.dep.web.dao.custom.ItemDAO;
 import lk.ijse.dep.web.dao.custom.OrderDAO;
@@ -29,10 +31,10 @@ public class AppWideBO {
     private OrderDetailDAO orderDetailDAO;
 
     public AppWideBO(Connection connection) throws Exception {
-        this.customerDAO = new CustomerDAOImpl();
-        this.itemDAO = new ItemDAOImpl();
-        this.orderDAO = new OrderDAOImpl();
-        this.orderDetailDAO = new OrderDetailDAOImpl();
+        this.customerDAO = DaoFactory.getInstance().<CustomerDAO>getDAO(DAOTypes.CUSTOMER);
+        this.itemDAO = DaoFactory.getInstance().getDAO(DAOTypes.ITEM);
+        this.orderDAO = DaoFactory.getInstance().getDAO(DAOTypes.ORDER);
+        this.orderDetailDAO = DaoFactory.getInstance().getDAO(DAOTypes.ORDER_DETAIL);
 
         this.customerDAO.setConnection(connection);
         this.itemDAO.setConnection(connection);
