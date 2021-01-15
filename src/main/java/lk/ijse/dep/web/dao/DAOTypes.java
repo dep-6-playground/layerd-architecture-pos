@@ -5,5 +5,5 @@ package lk.ijse.dep.web.dao;
  * @since : 2021-01-15
  **/
 public enum DAOTypes {
-    CUSTOMER,ITEM,ORDER,ORDER_DETAIL
+    CUSTOMER,ITEM,ORDER,ORDER_DETAIL,QUERY
 }

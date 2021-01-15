@@ -1,9 +1,6 @@
 package lk.ijse.dep.web.dao;
 
-import lk.ijse.dep.web.dao.custom.impl.CustomerDAOImpl;
-import lk.ijse.dep.web.dao.custom.impl.ItemDAOImpl;
-import lk.ijse.dep.web.dao.custom.impl.OrderDAOImpl;
-import lk.ijse.dep.web.dao.custom.impl.OrderDetailDAOImpl;
+import lk.ijse.dep.web.dao.custom.impl.*;
 
 /**
  * @author : Deshan Charuka <d.c.0729439631@gmail.com>
@@ -29,6 +26,8 @@ public class DaoFactory {
                 return (T) new OrderDAOImpl();
             case ORDER_DETAIL:
                 return (T) new OrderDetailDAOImpl();
+            case QUERY:
+                return (T) new QueryDAOImpl();
             default:
                 return null;
         }
