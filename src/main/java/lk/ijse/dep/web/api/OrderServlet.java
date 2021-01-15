@@ -1,8 +1,8 @@
 package lk.ijse.dep.web.api;
 
+import lk.ijse.dep.web.business.AppWideBO;
 import lk.ijse.dep.web.dto.CustomerDTO;
 import lk.ijse.dep.web.dto.OrderDTO;
-import lk.ijse.dep.web.dto.OrderDetailDTO;
 import lk.ijse.dep.web.exception.HttpResponseException;
 import lk.ijse.dep.web.exception.ResponseExceptionUtil;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -16,7 +16,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +30,8 @@ public class OrderServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             super.service(req, resp);
-        }catch (Throwable t){
-            ResponseExceptionUtil.handle(t,resp);
+        } catch (Throwable t) {
+            ResponseExceptionUtil.handle(t, resp);
         }
     }
 
@@ -57,7 +60,7 @@ public class OrderServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Jsonb jsonb = JsonbBuilder.create();
         final BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
 
@@ -65,58 +68,23 @@ public class OrderServlet extends HttpServlet {
             OrderDTO dto = jsonb.fromJson(req.getReader(), OrderDTO.class);
 
             if (dto.getOrderId() == null || dto.getOrderId().trim().isEmpty() || dto.getOrderDate() == null || dto.getOrderDetails().isEmpty()) {
-                throw new HttpResponseException(400, "Invalid order details" , null);
+                throw new HttpResponseException(400, "Invalid order details", null);
+            }
+            if (new AppWideBO(connection).saveOrder(dto)) {
+                resp.setStatus(HttpServletResponse.SC_CREATED);
+            } else {
+                throw new HttpResponseException(500, "Failed to save the order, transaction failed", null);
             }
 
-            try {
-
-                /* Let's start transactions */
-                connection.setAutoCommit(false);
-
-                PreparedStatement pstm = connection.prepareStatement("INSERT INTO `order` VALUES (?,?,?)");
-                pstm.setString(1, dto.getOrderId());
-                pstm.setDate(2, Date.valueOf(dto.getOrderDate()));
-                pstm.setString(3, dto.getCustomerId());
-
-                if (pstm.executeUpdate() > 0) {
-
-                    pstm = connection.prepareStatement("INSERT INTO order_detail VALUE (?,?,?,?)");
-                    PreparedStatement pstm2 = connection.prepareStatement("UPDATE item SET qty_on_hand = qty_on_hand - ? WHERE code=?");
-                    for (OrderDetailDTO detail : dto.getOrderDetails()) {
-                        pstm.setString(1, dto.getOrderId());
-                        pstm.setString(2, detail.getItemCode());
-                        pstm.setInt(3, detail.getQty());
-                        pstm.setBigDecimal(4, detail.getUnitPrice());
-
-                        pstm2.setInt(1,detail.getQty());
-                        pstm2.setString(2,detail.getItemCode());
-
-                        if (pstm.executeUpdate() == 0 || pstm2.executeUpdate() == 0){
-                            throw new HttpResponseException(500, "Failed to save the order, transaction failed during order details processing", null);
-                        }
-                    }
-
-                    connection.commit();
-                    resp.setStatus(HttpServletResponse.SC_CREATED);
-                } else {
-                    throw new HttpResponseException(500, "Failed to save the order, transaction failed", null);
-                }
-
-            }catch (Throwable t){
-                /* In case something happens unexpectedly */
-                connection.rollback();
-                throw t;
-            }finally{
-                connection.setAutoCommit(true);
-            }
-        }catch (SQLIntegrityConstraintViolationException exp){
+        } catch (SQLIntegrityConstraintViolationException exp) {
             throw new HttpResponseException(400, "Duplicate entry", exp);
         } catch (JsonbException exp) {
             exp.printStackTrace();
             throw new HttpResponseException(400, "Failed to read the JSON", exp);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
+
 }
+

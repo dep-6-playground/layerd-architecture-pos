@@ -8,36 +8,25 @@ import java.math.BigDecimal;
  * @since : 2021-01-14
  **/
 public class OrderDetail implements Serializable {
-    private String orderId;
-    private String itemCode;
+    private OrderDetailPK orderDetailPK;
     private int qty;
     private BigDecimal unitPrice;
 
     public OrderDetail() {
     }
 
-    public OrderDetail(String orderId, String itemCode, int qty, BigDecimal unitPrice) {
-        this.orderId = orderId;
-        this.itemCode = itemCode;
+    public OrderDetail(OrderDetailPK orderDetailPK, int qty, BigDecimal unitPrice) {
+        this.orderDetailPK = orderDetailPK;
         this.qty = qty;
         this.unitPrice = unitPrice;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public OrderDetail(String orderId, String itemCode, int qty, BigDecimal unitPrice) {
+        this.orderDetailPK = new OrderDetailPK(orderId,itemCode);
+        this.qty = qty;
+        this.unitPrice = unitPrice;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getItemCode() {
-        return itemCode;
-    }
-
-    public void setItemCode(String itemCode) {
-        this.itemCode = itemCode;
-    }
 
     public int getQty() {
         return qty;
@@ -55,11 +44,19 @@ public class OrderDetail implements Serializable {
         this.unitPrice = unitPrice;
     }
 
+
+    public OrderDetailPK getOrderDetailPK() {
+        return orderDetailPK;
+    }
+
+    public void setOrderDetailPK(OrderDetailPK orderDetailPK) {
+        this.orderDetailPK = orderDetailPK;
+    }
+
     @Override
     public String toString() {
         return "OrderDetail{" +
-                "orderId='" + orderId + '\'' +
-                ", itemCode='" + itemCode + '\'' +
+                "orderDetailPK=" + orderDetailPK +
                 ", qty=" + qty +
                 ", unitPrice=" + unitPrice +
                 '}';
