@@ -1,5 +1,6 @@
 package lk.ijse.dep.web.dao.custom.impl;
 
+import lk.ijse.dep.web.dao.CrudUtil;
 import lk.ijse.dep.web.dao.custom.CustomerDAO;
 import lk.ijse.dep.web.entity.Customer;
 
@@ -24,35 +25,25 @@ public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
     public boolean save(Customer customer) throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("INSERT INTO customer VALUES (?,?,?)");
-        pstm.setString(1, customer.getId());
-        pstm.setString(2, customer.getName());
-        pstm.setString(3, customer.getAddress());
-        return pstm.executeUpdate() > 0;
+      return CrudUtil.execute(connection,"INSERT INTO customer VALUES (?,?,?)",
+                customer.getId(),customer.getName(),customer.getAddress());
     }
 
     @Override
     public boolean update(Customer customer) throws Exception {
-        PreparedStatement pst = connection.prepareStatement("UPDATE customer SET name=?, address=? WHERE id=?");
-        pst.setString(1, customer.getName());
-        pst.setString(2, customer.getAddress());
-        pst.setString(3, customer.getId());
-        return pst.executeUpdate() > 0;
+return CrudUtil.execute(connection,"UPDATE customer SET name=?, address=? WHERE id=?",customer.getName(),customer.getAddress(),customer.getId());
 
     }
 
     @Override
     public boolean delete(String id) throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("DELETE FROM customer WHERE id=?");
-        pstm.setString(1, id);
-        return pstm.executeUpdate() > 0;
+return CrudUtil.execute(connection,"DELETE FROM customer WHERE id=?",id);
     }
 
     @Override
     public List<Customer> getAll() throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM customer");
         List<Customer> customers = new ArrayList<>();
-        ResultSet rst = pstm.executeQuery();
+        ResultSet rst = CrudUtil.execute(connection,"SELECT * FROM customer");
         while (rst.next()) {
             customers.add(new Customer(rst.getString("id"), rst.getString("name"), rst.getString("address")));
         }
@@ -61,9 +52,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
     public Customer get(String id) throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM customer WHERE id=?");
-        pstm.setString(1,id);
-        ResultSet rst = pstm.executeQuery();
+        ResultSet rst = CrudUtil.execute(connection,"SELECT * FROM customer WHERE id=?",id);
         if (rst.next()) {
             return new Customer(
                     rst.getString("id"),

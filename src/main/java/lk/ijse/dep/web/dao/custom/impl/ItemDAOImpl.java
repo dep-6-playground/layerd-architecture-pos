@@ -1,5 +1,6 @@
 package lk.ijse.dep.web.dao.custom.impl;
 
+import lk.ijse.dep.web.dao.CrudUtil;
 import lk.ijse.dep.web.dao.custom.ItemDAO;
 import lk.ijse.dep.web.entity.Customer;
 import lk.ijse.dep.web.entity.Item;
@@ -23,54 +24,41 @@ public class ItemDAOImpl implements ItemDAO {
     }
 
     @Override
-    public boolean save(Item item) throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("INSERT INTO item VALUES (?,?,?,?)");
-        pstm.setString(1, item.getCode());
-        pstm.setString(2, item.getDescription());
-        pstm.setBigDecimal(3, item.getUnitPrice());
-        pstm.setInt(4, item.getQtyOnHand());
-        return pstm.executeUpdate() > 0;
+    public boolean save(Item item) throws Exception{
+        return CrudUtil.execute(connection,"INSERT INTO item VALUES (?,?,?,?)", item.getCode(), item.getDescription(), item.getUnitPrice(), item.getQtyOnHand());
     }
 
     @Override
     public boolean update(Item item) throws Exception {
-        PreparedStatement pst = connection.prepareStatement("UPDATE item SET description=?,unit_price=?,qty_on_hand=? WHERE code=?");
-        pst.setString(1, item.getDescription());
-        pst.setBigDecimal(2, item.getUnitPrice());
-        pst.setInt(3, item.getQtyOnHand());
-        pst.setString(4, item.getCode());
-        return pst.executeUpdate() > 0;
+        return CrudUtil.execute(connection, "UPDATE item SET description=?, unit_price=?, qty_on_hand=? WHERE code=?", item.getDescription(), item.getUnitPrice(), item.getQtyOnHand(), item.getCode());
     }
 
     @Override
     public boolean delete(String code) throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("DELETE FROM item WHERE code=?");
-        pstm.setString(1, code);
-        return pstm.executeUpdate() > 0;
+        return CrudUtil.execute(connection,"DELETE FROM item WHERE code=?", code );
     }
 
     @Override
     public List<Item> getAll() throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM item");
         List<Item> items = new ArrayList<>();
-        ResultSet rst = pstm.executeQuery();
-        while (rst.next()) {
-            items.add(
-                    new Item(
-                            rst.getString("code"), rst.getString("description"), rst.getBigDecimal("unit_price"), rst.getInt("qty_on_hand")));
+        ResultSet rst = CrudUtil.execute(connection, "SELECT * FROM item");
+        while (rst.next()){
+            items.add(new Item(rst.getString("code"),
+                    rst.getString("description"),
+                    rst.getBigDecimal("unit_price"),
+                    rst.getInt("qty_on_hand")));
         }
         return items;
     }
 
     @Override
-    public Item get(String key) throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM item WHERE code=?");
-        pstm.setString(1, key);
-        ResultSet rst = pstm.executeQuery();
-
+    public Item get(String code) throws Exception {
+        ResultSet rst = CrudUtil.execute(connection, "SELECT * FROM item WHERE code=?", code);
         if (rst.next()) {
-            return new Item(
-                    rst.getString("code"), rst.getString("description"), rst.getBigDecimal("unit_price"), rst.getInt("qty_on_hand"));
+            return new Item(rst.getString("code"),
+                    rst.getString("description"),
+                    rst.getBigDecimal("unit_price"),
+                    rst.getInt("qty_on_hand"));
         } else {
             return null;
         }

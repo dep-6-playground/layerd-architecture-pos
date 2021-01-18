@@ -1,5 +1,6 @@
 package lk.ijse.dep.web.dao.custom.impl;
 
+import lk.ijse.dep.web.dao.CrudUtil;
 import lk.ijse.dep.web.dao.custom.QueryDAO;
 import lk.ijse.dep.web.entity.CustomEntity;
 
@@ -24,16 +25,14 @@ public class QueryDAOImpl implements QueryDAO {
 
     @Override
     public List<CustomEntity> getOrderInfo(String customerId) throws Exception {
-        PreparedStatement pstm = connection.prepareStatement("SELECT c.id AS customer_id, c.name AS customer_name, o.id AS order_id, o.date AS order_date,\n" +
+        ResultSet rst = CrudUtil.execute(connection, "SELECT c.id AS customer_id, c.name AS customer_name, o.id AS order_id, o.date AS order_date,\n" +
                 "       SUM(od.qty * od.unit_price) as order_detail\n" +
                 "FROM customer c\n" +
                 "INNER JOIN `order` o on c.id = o.customer_id\n" +
                 "INNER JOIN order_detail od on o.id = od.order_id\n" +
-                "WHERE c.id=? GROUP BY o.id;");
-        pstm.setString(1, customerId);
-        ResultSet rst = pstm.executeQuery();
+                "WHERE c.id=? GROUP BY o.id;", customerId);
         List<CustomEntity> orders = new ArrayList<>();
-        while (rst.next()) {
+        while (rst.next()){
             orders.add(new CustomEntity(rst.getString(1),
                     rst.getString(2),
                     rst.getString(3),
