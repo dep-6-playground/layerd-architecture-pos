@@ -1,6 +1,9 @@
 package lk.ijse.dep.web.api;
 
-import lk.ijse.dep.web.business.AppWideBO;
+import lk.ijse.dep.web.business.BOFactory;
+import lk.ijse.dep.web.business.BOTypes;
+import lk.ijse.dep.web.business.SuperBO;
+import lk.ijse.dep.web.business.custom.CustomerBO;
 import lk.ijse.dep.web.dto.CustomerDTO;
 import lk.ijse.dep.web.exception.HttpResponseException;
 import lk.ijse.dep.web.exception.ResponseExceptionUtil;
@@ -16,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @WebServlet(urlPatterns = "/api/v1/customers/*")
 public class CustomerServlet extends HttpServlet {
@@ -44,7 +45,11 @@ public class CustomerServlet extends HttpServlet {
             }
 
             String id = req.getPathInfo().replace("/", "");
-            if (new AppWideBO(connection).deleteCustomer(id)){
+
+            CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
+            customerBO.setConnection(connection);
+
+            if (customerBO.deleteCustomer(id)){
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }else{
                 throw new HttpResponseException(404, "There is no such customer exists", null);
@@ -73,7 +78,9 @@ public class CustomerServlet extends HttpServlet {
             if (dto.getId() != null || dto.getName().trim().isEmpty() || dto.getAddress().trim().isEmpty()){
                 throw new HttpResponseException(400, "Invalid details", null);
             }
-            if (new AppWideBO(connection).updateCustomer(dto)){
+            CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
+            customerBO.setConnection(connection);
+            if (customerBO.updateCustomer(dto)){
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }else{
                 throw new HttpResponseException(500, "Failed to update the customer", null);
@@ -93,7 +100,10 @@ public class CustomerServlet extends HttpServlet {
 
         try (Connection connection = cp.getConnection()) {
             resp.setContentType("application/json");
-            resp.getWriter().println(jsonb.toJson(new AppWideBO(connection).getAllCustomers()));
+
+            CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
+            customerBO.setConnection(connection);
+            resp.getWriter().println(jsonb.toJson(customerBO.findAllCustomers()));
 
         } catch (Throwable t) {
             ResponseExceptionUtil.handle(t, resp);
@@ -111,7 +121,9 @@ public class CustomerServlet extends HttpServlet {
             if (dto.getId() == null || dto.getId().trim().isEmpty() || dto.getName() == null || dto.getName().trim().isEmpty() || dto.getAddress()== null || dto.getAddress().trim().isEmpty()) {
                 throw new HttpResponseException(400, "Invalid customer details" , null);
             }
-            if (new AppWideBO(connection).saveCustomer(dto)) {
+            CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
+            customerBO.setConnection(connection);
+            if (customerBO.saveCustomer(dto)) {
                 resp.setStatus(HttpServletResponse.SC_CREATED);
                 resp.setContentType("application/json");
                 resp.getWriter().println(jsonb.toJson(dto));

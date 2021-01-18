@@ -13,11 +13,7 @@ public class CrudUtil {
         for (int i = 0; i < params.length; i++) {
             pstm.setObject(i+1,params[i]);
         }
-        if (sql.trim().matches("(?!)(SELECT).+")){
-            return (T) pstm.executeQuery();
-        }else{
-            return (T) (Boolean) (pstm.executeUpdate()>0);
-        }
+        return (sql.trim().matches("(?i)(SELECT).+")) ? (T) pstm.executeQuery() : (T) (Boolean) (pstm.executeUpdate() > 0);
     }
 }
 
