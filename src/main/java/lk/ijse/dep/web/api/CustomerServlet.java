@@ -1,13 +1,16 @@
 package lk.ijse.dep.web.api;
 
+
 import lk.ijse.dep.web.business.BOFactory;
 import lk.ijse.dep.web.business.BOTypes;
-import lk.ijse.dep.web.business.SuperBO;
+
 import lk.ijse.dep.web.business.custom.CustomerBO;
 import lk.ijse.dep.web.dto.CustomerDTO;
 import lk.ijse.dep.web.exception.HttpResponseException;
 import lk.ijse.dep.web.exception.ResponseExceptionUtil;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
@@ -23,11 +26,16 @@ import java.sql.*;
 @WebServlet(urlPatterns = "/api/v1/customers/*")
 public class CustomerServlet extends HttpServlet {
 
-
+    final Logger logger = LoggerFactory.getLogger(CustomerServlet.class);
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
+//            logger.error("Error: "+req.getServletPath());
+//            logger.warn("Warn:"+req.getServletPath());
+//            logger.info("Info : "+req.getServletPath());
+//            logger.debug("Debug: "+req.getServletPath());
+//            logger.trace("Trace : "+req.getServletPath());
             super.service(req, resp);
         }catch (Throwable t){
             ResponseExceptionUtil.handle(t,resp);

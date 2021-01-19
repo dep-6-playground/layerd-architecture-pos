@@ -51,7 +51,7 @@ public class OrderBOmpl implements OrderBO {
             /* 1. Saving the order */
             result = orderDAO.save(new Order(dto.getOrderId(), Date.valueOf(dto.getOrderDate()), dto.getCustomerId()));
 
-            if (!result){
+            if (!result) {
                 throw new RuntimeException("Failed to complete the transaction");
             }
 
@@ -62,19 +62,19 @@ public class OrderBOmpl implements OrderBO {
             for (OrderDetail orderDetail : orderDetails) {
                 result = orderDetailDAO.save(orderDetail);
 
-                if (!result){
+                if (!result) {
                     throw new RuntimeException("Failed to complete the transaction");
                 }
 
                 /* 3. Let's update the stock */
                 Item item = itemDAO.get(orderDetail.getOrderDetailPK().getItemCode());
-                if (item.getQtyOnHand() - orderDetail.getQty() < 0){
+                if (item.getQtyOnHand() - orderDetail.getQty() < 0) {
                     throw new RuntimeException("Invalid stock");
                 }
                 item.setQtyOnHand(item.getQtyOnHand() - orderDetail.getQty());
                 result = itemDAO.update(item);
 
-                if (!result){
+                if (!result) {
                     throw new RuntimeException("Failed to complete the transaction");
                 }
             }
@@ -82,11 +82,10 @@ public class OrderBOmpl implements OrderBO {
             connection.commit();
             return true;
 
-        }catch (Throwable t){
+        } catch (Throwable t) {
             connection.rollback();
-            t.printStackTrace();
-            return false;
-        }finally {
+            throw t;
+        } finally {
             connection.setAutoCommit(true);
         }
     }
