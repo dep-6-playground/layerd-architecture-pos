@@ -11,9 +11,9 @@ import java.util.List;
  **/
 public interface CustomerBO extends SuperBO {
 
-    boolean saveCustomer(CustomerDTO dto) throws Exception;
-    boolean updateCustomer(CustomerDTO dto) throws Exception;
-    boolean deleteCustomer(String id) throws Exception;
+    void saveCustomer(CustomerDTO dto) throws Exception;
+    void updateCustomer(CustomerDTO dto) throws Exception;
+    void deleteCustomer(String id) throws Exception;
 
     List<CustomerDTO> findAllCustomers() throws Exception;
 }
