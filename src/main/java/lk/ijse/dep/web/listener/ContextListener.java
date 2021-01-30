@@ -1,9 +1,11 @@
 package lk.ijse.dep.web.listener;
 
 
+import lk.ijse.dep.web.util.JPAUtil;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -33,12 +35,12 @@ public class ContextListener implements ServletContextListener {
         try {
             prop.load(this.getClass().getResourceAsStream("/application.properties"));
             BasicDataSource bds = new BasicDataSource();
-            bds.setUsername(prop.getProperty("mysql.username"));
-            bds.setPassword(prop.getProperty("mysql.password"));
-            bds.setUrl(prop.getProperty("mysql.url"));
-            bds.setDriverClassName(prop.getProperty("mysql.driver_classname"));
+            bds.setUsername(prop.getProperty("dbcp.connection.username"));
+            bds.setPassword(prop.getProperty("dbcp.connection.password"));
+            bds.setUrl(prop.getProperty("dbcp.connection.url"));
+            bds.setDriverClassName(prop.getProperty("dbcp.connection.driver_class"));
             bds.setInitialSize(5);
-            sce.getServletContext().setAttribute("cp", bds);
+            sce.getServletContext().setAttribute("emf", JPAUtil.getEntityManagerFactory());
 
             //System.out.println(System.getProperty("catalina.home"));
 
@@ -62,12 +64,7 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        BasicDataSource bds = (BasicDataSource) sce.getServletContext().getAttribute("cp");
-        try {
-            bds.close();
-            logger.debug("Connection pool is closed...!");
-        } catch (SQLException throwables) {
-            logger.error("Failed to close the connection pool", throwables);
-        }
+        JPAUtil.getEntityManagerFactory().close();
+        logger.debug("Connection pool is closed...!");
     }
 }
