@@ -13,6 +13,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -39,47 +41,22 @@ public class OrderServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Jsonb jsonb = JsonbBuilder.create();
-        final BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
-
-        try (Connection connection = cp.getConnection()) {
-            Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM customer");
-            List<CustomerDTO> customers = new ArrayList<>();
-
-            while (rst.next()) {
-                customers.add(new CustomerDTO(rst.getString("id"),
-                        rst.getString("name"),
-                        rst.getString("address")));
-            }
-
-            resp.setContentType("application/json");
-            resp.getWriter().println(jsonb.toJson(customers));
-
-        } catch (Throwable t) {
-            ResponseExceptionUtil.handle(t, resp);
-        }
-    }
-
-    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Jsonb jsonb = JsonbBuilder.create();
-        final BasicDataSource cp = (BasicDataSource) getServletContext().getAttribute("cp");
+        final EntityManagerFactory emf = (EntityManagerFactory) getServletContext().getAttribute("emf");
+        EntityManager entityManager = null;
 
-        try (Connection connection = cp.getConnection()) {
+        try{
+            entityManager = emf.createEntityManager();
             OrderDTO dto = jsonb.fromJson(req.getReader(), OrderDTO.class);
 
             if (dto.getOrderId() == null || dto.getOrderId().trim().isEmpty() || dto.getOrderDate() == null || dto.getOrderDetails().isEmpty()) {
                 throw new HttpResponseException(400, "Invalid order details", null);
             }
             OrderBO orderBO = BOFactory.getInstance().getBO(BOTypes.ORDER);
-            orderBO.setConnection(connection);
-            if (orderBO.placeOrder(dto)) {
-                resp.setStatus(HttpServletResponse.SC_CREATED);
-            } else {
-                throw new HttpResponseException(500, "Failed to save the order, transaction failed", null);
-            }
+            orderBO.setEntityManager(entityManager);
+            orderBO.placeOrder(dto);
+            resp.setStatus(HttpServletResponse.SC_CREATED);
 
         } catch (SQLIntegrityConstraintViolationException exp) {
             throw new HttpResponseException(400, "Duplicate entry", exp);
@@ -88,6 +65,9 @@ public class OrderServlet extends HttpServlet {
             throw new HttpResponseException(400, "Failed to read the JSON", exp);
         } catch (Throwable e) {
             throw new RuntimeException(e);
+        }finally {
+            entityManager.close();
+            emf.close();
         }
     }
 
