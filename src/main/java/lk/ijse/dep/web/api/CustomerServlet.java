@@ -55,7 +55,7 @@ public class CustomerServlet extends HttpServlet {
             String id = req.getPathInfo().replace("/", "");
 
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
-            customerBO.setConnection(connection);
+            customerBO.setEntityManager(connection);
 
             if (customerBO.deleteCustomer(id)){
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
