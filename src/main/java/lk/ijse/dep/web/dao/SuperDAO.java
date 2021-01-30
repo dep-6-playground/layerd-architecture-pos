@@ -2,6 +2,7 @@ package lk.ijse.dep.web.dao;
 
 import lk.ijse.dep.web.entity.Customer;
 
+import javax.persistence.EntityManager;
 import java.sql.Connection;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import java.util.List;
  * @since : 2021-01-15
  **/
 public interface SuperDAO{
-    public void setConnection(Connection connection) throws Exception;
+
+    default void setEntityManager(EntityManager entityManager) throws Exception{};
 
 }
+

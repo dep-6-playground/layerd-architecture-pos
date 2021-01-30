@@ -35,10 +35,10 @@ public class ContextListener implements ServletContextListener {
         try {
             prop.load(this.getClass().getResourceAsStream("/application.properties"));
             BasicDataSource bds = new BasicDataSource();
-            bds.setUsername(prop.getProperty("dbcp.connection.username"));
-            bds.setPassword(prop.getProperty("dbcp.connection.password"));
-            bds.setUrl(prop.getProperty("dbcp.connection.url"));
-            bds.setDriverClassName(prop.getProperty("dbcp.connection.driver_class"));
+            bds.setUsername(prop.getProperty("javax.persistence.jdbc.user"));
+            bds.setPassword(prop.getProperty("javax.persistence.jdbc.password"));
+            bds.setUrl(prop.getProperty("javax.persistence.jdbc.url"));
+            bds.setDriverClassName(prop.getProperty("javax.persistence.jdbc.driver"));
             bds.setInitialSize(5);
             sce.getServletContext().setAttribute("emf", JPAUtil.getEntityManagerFactory());
 

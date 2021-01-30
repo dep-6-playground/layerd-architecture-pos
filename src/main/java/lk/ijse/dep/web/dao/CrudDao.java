@@ -9,11 +9,11 @@ import java.util.List;
  * @since : 2021-01-15
  **/
 public interface CrudDao<T extends SuperEntity,K> extends SuperDAO {
-    public boolean save(T entity) throws Exception;
+    public void save(T entity) throws Exception;
 
-    public boolean update(T entity) throws Exception;
+    public void update(T entity) throws Exception;
 
-    public boolean delete(K key) throws Exception;
+    public void delete(K key) throws Exception;
 
     public List<T> getAll() throws Exception;
 
